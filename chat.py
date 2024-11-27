@@ -2,12 +2,12 @@ from autogen import ConversableAgent
 from pprint import pprint
 import os
 
-# llm_config =  {"api_type": "groq", "model": "llama3-8b-8192", "api_key": "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", "cache_seed": None}
-llm_config ={
-    "model" : "llama2:13b",
-    "api_key" : "llama",
-    "base_url" : "http://localhost:11434/v1"
-}
+llm_config =  {"api_type": "groq", "model": "llama3-8b-8192", "api_key": "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", "cache_seed": None}
+# llm_config ={
+#     "model" : "llama2:13b",
+#     "api_key" : "llama",
+#     "base_url" : "http://localhost:11434/v1"
+# }
 bret = ConversableAgent(
     llm_config=llm_config,
     name="bret",  
