@@ -46,17 +46,15 @@ time_reallocation_agent = AssistantAgent(
                    """Your goal is to:
                    - Understand the status of the user's current task
                    - If the task is incomplete, gather precise start and end times 
-                   - If the task is complete, confirm and proceed with removal
+                   - If the task is complete,   proceed with removal
                    
                    Interaction Guidelines:
-                   - Ask clear, concise questions about task completion
-                   - Provide context for each query
+                   - Ask clear, concise questions about task completion 
                    - Confirm details before finalizing 
                    
                    Prompt Format:
                    1. Confirm task status: 'Have you completed your task?'
-                   2. If no: 'Please provide the intended start and end times for your task.'
-                   3. Verify details: 'Let me confirm the task details with you.'
+                   2. If no: 'Please provide the intended start and end times for your task.' 
                    4. Seek final confirmation: 'Are these details correct? Reply with TERMINATE to confirm.'""",
     llm_config=llm_config,
     human_input_mode="NEVER",
