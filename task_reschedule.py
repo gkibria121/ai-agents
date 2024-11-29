@@ -113,7 +113,7 @@ chats = [
         "recipient": code_processor_agent, 
         "message": """ 
         If the status of JSON object is incomplete , you will write a python block importing update_task_reminder from functions and call it with start and end time
-        If the status of JSON object is completed , you will write a python block importing remove_task 
+        If the status of JSON object is completed , you will write a python block importing remove_task_reminder 
 
         """,
         "summary_method": "reflection_with_llm", 
@@ -134,5 +134,5 @@ chats = [
 
 
  
-
-initiate_chats(chats)
+def re_schedule_or_remove_task():
+   return chats
