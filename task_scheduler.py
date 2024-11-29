@@ -1,15 +1,22 @@
 import datetime
 from autogen import ConversableAgent, AssistantAgent, UserProxyAgent, initiate_chats
 from autogen.coding import LocalCommandLineCodeExecutor
-
+from pprint import pprint
 # Utility function to be called
-def add_task_reminder(start, end, duration):
+def add_task_reminder(start, end):
     """
-    Print task details
+    Print task details.
+
+    Parameters:
+    start (str): Task start date and time in string format.
+    end (str): Task end date and time in string format. 
+
+    Returns:
+    None
     """
     print(f"Task Start: {start}")
-    print(f"Task End: {end}")
-    print(f"Task Duration: {duration} minutes")
+    print(f"Task End: {end}") 
+
 
 # LLM Configuration
 llm_config = {
@@ -33,7 +40,7 @@ current_time = datetime.datetime.now()
 time_allocation_agent = AssistantAgent(
             name="time_allocation_agent", 
             system_message="You are a Time Allocation Agent. "
-                        f"The current system time is {current_time.strftime('%Y-%m-%d %H:%M:%S')}. "
+                        f"The current system time is {current_time.strftime('%Y-%m-%d %H:%M:%S')}. " 
                         "Ask the user about task start time and duration. "
                         "When details are collected, prepare to pass them to the processor." 
                             "After getting avobe information repeat it and add"
@@ -41,6 +48,7 @@ time_allocation_agent = AssistantAgent(
             llm_config=llm_config,
             human_input_mode="NEVER",
             is_termination_msg=lambda msg: "terminate" in msg.get("content").lower(),
+            default_auto_reply=  "Please continue. If everything is done, reply 'TERMINATE'.",
         )      
 
 
@@ -54,7 +62,7 @@ user_proxy_agent = ConversableAgent(
 # Code Processor Agent
 code_processor_agent = ConversableAgent(
     name="code_processor_agent",
-    system_message="Process task timing details and call the task reminder function."+executor.format_functions_for_prompt(),
+    system_message="Call user defined functions in a single python block without any comments."+executor.format_functions_for_prompt(),
     llm_config=llm_config, 
     human_input_mode="NEVER" ,
     default_auto_reply=  "Please continue. If everything is done, reply 'TERMINATE'.",
@@ -79,29 +87,29 @@ chats = [
         "summary_method": "reflection_with_llm",
         "summary_args": {
             "summary_prompt": "Extract task timing in JSON: "
-                              "{'start': 'YYYY-MM-DD HH:mm', 'duration': minutes}"
+                              "{'start': 'YYYY-MM-DD HH:mm', 'end' : 'YYYY-MM-DD HH:mm'   }"
         }
     },
     {
         "sender": time_allocation_agent,
         "recipient": code_processor_agent, 
-        "message": "Get the python code",
-        "summary_method": "reflection_with_llm",
+        "message": "Import the add_task_reminder_function from functions, call the function with parameter start and end time",
+        "summary_method": "reflection_with_llm", 
         "summary_args": {
-            "summary_prompt": "Get the sart time and duration and call the user defiend function in a python block" 
-        },
-         "max_turns": 1,
+            "summary_prompt": "Only python block  , without any comment or explain "
+                               
+        }   ,
+        "max_turns" : 1
     },
     {
         "sender": code_processor_agent,
         "recipient": code_executor_agent,
         "message": "Execute task reminder function",
-        "max_turns": 1,
+        "summary_method": "reflection_with_llm",  
+        "max_turns" : 1
     }
 ]
 
 # Initiate Chats
 replys = initiate_chats(chats)
 
- 
-print(replys[-1].summary)
